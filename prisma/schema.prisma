@@ -8,12 +8,13 @@ datasource db {
 }
 
 model Channel {
-  id           Int      @id @default(autoincrement())
-  channelId    String   @unique
-  name         String
-  thumbnailUrl String
-  registeredAt DateTime @default(now())
-  videos       Video[]
+  id                Int      @id @default(autoincrement())
+  channelId         String   @unique
+  name              String
+  thumbnailUrl      String
+  uploadsPlaylistId String   @default("")
+  registeredAt      DateTime @default(now())
+  videos            Video[]
 }
 
 model Video {

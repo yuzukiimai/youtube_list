@@ -29,6 +29,7 @@ export async function POST(req: Request) {
       channelId: channelInfo.channelId,
       name: channelInfo.name,
       thumbnailUrl: channelInfo.thumbnailUrl,
+      uploadsPlaylistId: channelInfo.uploadsPlaylistId,
     },
   })
 
