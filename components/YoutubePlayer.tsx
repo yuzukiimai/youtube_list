@@ -36,29 +36,25 @@ export function YoutubePlayer({ videoId, startSeconds, onProgress, onEnded }: Pr
 
     const initPlayer = () => {
       if (!containerRef.current || destroyed) return
-      try {
-        playerRef.current = new window.YT.Player(containerRef.current, {
-          videoId,
-          width: '100%',
-          playerVars: { start: Math.floor(startSeconds), rel: 0 },
-          events: {
-            onReady: (e: YT.PlayerEvent) => {
-              const duration = e.target.getDuration()
-              onProgress(startSeconds, duration)
-            },
-            onStateChange: (e: YT.OnStateChangeEvent) => {
-              if (e.data === window.YT.PlayerState.PLAYING) {
-                startInterval(playerRef.current!)
-              } else {
-                if (intervalRef.current) clearInterval(intervalRef.current)
-                if (e.data === window.YT.PlayerState.ENDED) onEnded()
-              }
-            },
+      playerRef.current = new window.YT.Player(containerRef.current, {
+        videoId,
+        width: '100%',
+        playerVars: { start: Math.floor(startSeconds), rel: 0 },
+        events: {
+          onReady: (e: YT.PlayerEvent) => {
+            const duration = e.target.getDuration()
+            onProgress(startSeconds, duration)
           },
-        })
-      } catch {
-        // Player construction may fail in test environments with non-constructable mocks
-      }
+          onStateChange: (e: YT.OnStateChangeEvent) => {
+            if (e.data === window.YT.PlayerState.PLAYING) {
+              startInterval(playerRef.current!)
+            } else {
+              if (intervalRef.current) clearInterval(intervalRef.current)
+              if (e.data === window.YT.PlayerState.ENDED) onEnded()
+            }
+          },
+        },
+      })
     }
 
     if (typeof window !== 'undefined') {
