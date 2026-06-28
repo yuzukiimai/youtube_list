@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
-import { resolveChannelFromUrl, fetchAllVideos } from '@/lib/youtube'
+import { resolveChannelFromUrl, fetchAllVideos, VideoInfo } from '@/lib/youtube'
 
 export async function POST(req: Request) {
   const body = await req.json().catch(() => ({}))
@@ -33,17 +33,23 @@ export async function POST(req: Request) {
     },
   })
 
-  const videos = await fetchAllVideos(channelInfo.uploadsPlaylistId)
-  await prisma.video.createMany({
-    data: videos.map(v => ({
-      videoId: v.videoId,
-      channelId: channel.id,
-      title: v.title,
-      thumbnailUrl: v.thumbnailUrl,
-      publishedAt: new Date(v.publishedAt),
-    })),
-    skipDuplicates: true,
-  })
+  let videos: VideoInfo[]
+  try {
+    videos = await fetchAllVideos(channelInfo.uploadsPlaylistId)
+    await prisma.video.createMany({
+      data: videos.map(v => ({
+        videoId: v.videoId,
+        channelId: channel.id,
+        title: v.title,
+        thumbnailUrl: v.thumbnailUrl,
+        publishedAt: new Date(v.publishedAt),
+      })),
+      skipDuplicates: true,
+    })
+  } catch (e) {
+    await prisma.channel.delete({ where: { id: channel.id } })
+    return NextResponse.json({ error: 'Failed to fetch videos from YouTube' }, { status: 500 })
+  }
 
   return NextResponse.json({
     id: channel.id,

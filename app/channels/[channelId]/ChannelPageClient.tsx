@@ -93,7 +93,11 @@ export function ChannelPageClient({ channel, initialVideos }: Props) {
   const handleSync = async () => {
     setSyncing(true)
     try {
-      await fetch(`/api/channels/${channel.id}/sync`, { method: 'POST' })
+      const syncRes = await fetch(`/api/channels/${channel.id}/sync`, { method: 'POST' })
+      if (!syncRes.ok) {
+        // sync failed silently — still refresh to show current state
+        console.error('Sync failed:', await syncRes.text())
+      }
       const res = await fetch(`/api/channels/${channel.id}/videos`)
       if (res.ok) setVideos(await res.json())
     } finally {

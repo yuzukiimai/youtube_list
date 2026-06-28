@@ -39,6 +39,7 @@ export function YoutubePlayer({ videoId, startSeconds, onProgress, onEnded }: Pr
       playerRef.current = new window.YT.Player(containerRef.current, {
         videoId,
         width: '100%',
+        height: '100%',
         playerVars: { start: Math.floor(startSeconds), rel: 0 },
         events: {
           onReady: (e: YT.PlayerEvent) => {
@@ -81,5 +82,5 @@ export function YoutubePlayer({ videoId, startSeconds, onProgress, onEnded }: Pr
     }
   }, [videoId])
 
-  return <div ref={containerRef} data-testid="yt-player-container" />
+  return <div ref={containerRef} data-testid="yt-player-container" className="w-full h-full" />
 }
