@@ -1,0 +1,31 @@
+generator client {
+  provider = "prisma-client"
+  output   = "../generated/prisma"
+}
+
+datasource db {
+  provider = "sqlite"
+}
+
+model Channel {
+  id           Int      @id @default(autoincrement())
+  channelId    String   @unique
+  name         String
+  thumbnailUrl String
+  registeredAt DateTime @default(now())
+  videos       Video[]
+}
+
+model Video {
+  id              Int       @id @default(autoincrement())
+  videoId         String    @unique
+  channelId       Int
+  channel         Channel   @relation(fields: [channelId], references: [id], onDelete: Cascade)
+  title           String
+  thumbnailUrl    String
+  duration        Int?
+  publishedAt     DateTime
+  watched         Boolean   @default(false)
+  watchedAt       DateTime?
+  progressSeconds Int       @default(0)
+}
