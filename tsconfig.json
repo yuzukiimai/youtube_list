@@ -21,7 +21,7 @@
     "paths": {
       "@/*": ["./*"]
     },
-    "types": ["vitest/globals"]
+    "types": ["vitest/globals", "youtube"]
   },
   "include": [
     "next-env.d.ts",

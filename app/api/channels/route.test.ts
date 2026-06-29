@@ -21,11 +21,12 @@ const mockChannel = {
   channelId: 'UCtest123',
   name: 'Test Channel',
   thumbnailUrl: 'https://example.com/thumb.jpg',
+  uploadsPlaylistId: 'UUtest123',
   registeredAt: new Date(),
 }
 
 test('POST /api/channels registers a channel and fetches videos', async () => {
-  vi.mocked(youtube.resolveChannelFromUrl).mockResolvedValue({
+  vi.mocked(youtube.resolveChannelFromInput).mockResolvedValue({
     channelId: 'UCtest123',
     name: 'Test Channel',
     thumbnailUrl: 'https://example.com/thumb.jpg',
@@ -69,7 +70,7 @@ test('POST /api/channels returns 409 if channel already registered', async () =>
     body: JSON.stringify({ url: 'https://www.youtube.com/@testchannel' }),
   })
 
-  vi.mocked(youtube.resolveChannelFromUrl).mockResolvedValue({
+  vi.mocked(youtube.resolveChannelFromInput).mockResolvedValue({
     channelId: 'UCtest123',
     name: 'Test Channel',
     thumbnailUrl: 'https://example.com/thumb.jpg',

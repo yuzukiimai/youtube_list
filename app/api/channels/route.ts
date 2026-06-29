@@ -1,18 +1,18 @@
 import { NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
-import { resolveChannelFromUrl, fetchAllVideos, VideoInfo } from '@/lib/youtube'
+import { resolveChannelFromInput, fetchAllVideos, VideoInfo } from '@/lib/youtube'
 
 export async function POST(req: Request) {
   const body = await req.json().catch(() => ({}))
-  const { url } = body
+  const value: unknown = body.input ?? body.url
 
-  if (!url || typeof url !== 'string') {
-    return NextResponse.json({ error: 'url is required' }, { status: 400 })
+  if (!value || typeof value !== 'string') {
+    return NextResponse.json({ error: 'チャンネル名または URL を入力してください' }, { status: 400 })
   }
 
   let channelInfo
   try {
-    channelInfo = await resolveChannelFromUrl(url)
+    channelInfo = await resolveChannelFromInput(value)
   } catch (e) {
     return NextResponse.json({ error: (e as Error).message }, { status: 400 })
   }
@@ -44,9 +44,9 @@ export async function POST(req: Request) {
         thumbnailUrl: v.thumbnailUrl,
         publishedAt: new Date(v.publishedAt),
       })),
-      skipDuplicates: true,
     })
   } catch (e) {
+    console.error('[channel register] fetchAllVideos failed:', e)
     await prisma.channel.delete({ where: { id: channel.id } })
     return NextResponse.json({ error: 'Failed to fetch videos from YouTube' }, { status: 500 })
   }
@@ -63,7 +63,7 @@ export async function POST(req: Request) {
 export async function GET(_req: Request) {
   const channels = await prisma.channel.findMany({
     orderBy: { registeredAt: 'desc' },
-    include: { videos: { select: { watched: true } } },
+    include: { videos: { select: { watched: true, progressSeconds: true } } },
   })
 
   return NextResponse.json(
@@ -74,6 +74,7 @@ export async function GET(_req: Request) {
       thumbnailUrl: ch.thumbnailUrl,
       videoCount: ch.videos.length,
       watchedCount: ch.videos.filter(v => v.watched).length,
+      inProgressCount: ch.videos.filter(v => !v.watched && v.progressSeconds > 0).length,
     }))
   )
 }

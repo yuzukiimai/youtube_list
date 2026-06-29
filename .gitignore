@@ -47,3 +47,7 @@ generated/
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# local tooling / agent scratch
+.claude/
+.superpowers/

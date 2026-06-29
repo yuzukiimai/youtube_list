@@ -19,11 +19,12 @@ export async function PATCH(
 
   const updated = await prisma.video.update({
     where: { id: videoId },
-    data: {
-      watched,
-      watchedAt: watched ? new Date() : null,
-    },
+    // Resetting to unwatched also clears playback progress, so the video goes
+    // fully back to "未視聴" rather than lingering as "中断".
+    data: watched
+      ? { watched: true, watchedAt: new Date() }
+      : { watched: false, watchedAt: null, progressSeconds: 0 },
   })
 
-  return NextResponse.json({ watched: updated.watched })
+  return NextResponse.json({ watched: updated.watched, progressSeconds: updated.progressSeconds })
 }

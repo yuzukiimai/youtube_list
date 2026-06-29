@@ -1,3 +1,31 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+@import "tailwindcss";
+
+body {
+  background-color: #f6f7f9;
+  color: #171717;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Comfortable, easy-to-grab scrollbars */
+.scroll-slim {
+  scrollbar-width: auto;
+  scrollbar-color: #a1a1aa transparent;
+}
+.scroll-slim::-webkit-scrollbar {
+  width: 14px;
+  height: 14px;
+}
+.scroll-slim::-webkit-scrollbar-thumb {
+  background-color: #b4b4bb;
+  border-radius: 9999px;
+  /* padding so the thumb looks inset but stays wide/easy to grab */
+  border: 3px solid transparent;
+  background-clip: padding-box;
+}
+.scroll-slim::-webkit-scrollbar-thumb:hover {
+  background-color: #8a8a93;
+}
+.scroll-slim::-webkit-scrollbar-track {
+  background: transparent;
+}
